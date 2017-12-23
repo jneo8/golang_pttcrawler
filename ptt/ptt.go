@@ -6,6 +6,8 @@ import (
     "log"
     // "io/ioutil"
     "golang.org/x/net/html"
+    // "strings"
+    // "reflect"
 )
 
 const (
@@ -31,15 +33,31 @@ func GetResp(url string) (*http.Response) {
     if err != nil {
         log.Fatal(err)
     }
+    fmt.Println(resp.Body)
     // bytes, err := ioutil.ReadAll(resp.Body)
     // if err != nil {
     //     log.Fatal(err)
     // }
     // text := string(bytes)
-    // fmt.Println(text)
-
-    fmt.Printf("%r\n\n\n", resp)
+    // fmt.Printf("%T\n", text)
     defer resp.Body.Close()
+    fmt.Println(resp.Body)
+
+    z := html.NewTokenizer(resp.Body)
+    tokens_loop:
+        for {
+            tt := z.Next()
+            fmt.Printf("%T\n", z)
+            switch tt {
+                case html.ErrorToken:
+                    fmt.Println("End")
+                    break tokens_loop
+                default:
+                    tn, _ := z.TagName()
+                    t := z.Token()
+                    fmt.Printf("tagename: %s data: %s\n", tn, t.Data)
+            }
+        }
     return resp
 }
 
@@ -47,22 +65,6 @@ func GetResp(url string) (*http.Response) {
 func GetBoardList() {
     url := "https://www.ptt.cc/bbs/hotboards.html"
     resp := GetResp(url)
-    htmlTokens := html.NewTokenizer(resp.Body)
-    token_loop:
-        for {
-            tokenType := htmlTokens.Next()
-            fmt.Printf("tokenType: %s\n", tokenType)
-            switch tokenType {
-                case html.ErrorToken:
-                    fmt.Println("End")
-                    break token_loop
-                case html.TextToken:
-                    fmt.Println(tokenType)
-                default:
-                    fmt.Println(tokenType)
-            }
-        }
-    // Todo
-    // parser
+    fmt.Printf("%T", resp)
 }
 
