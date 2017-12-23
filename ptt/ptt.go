@@ -3,51 +3,65 @@ package ptt
 import (
     "net/http"
     "fmt"
-    "io/ioutil"
+    "log"
+    // "io/ioutil"
+    "golang.org/x/net/html"
 )
 
 const (
     BASE_URL = "https://www.ptt.cc/bbs/"
 )
 
-func GetDoc(url string) ([]byte, error) {
+func GetResp(url string) (*http.Response) {
     // Add cookie
     req, err := http.NewRequest("GET", url, nil)
-    cookie := http.Cookie {
-        Name: "over18",
-        Value: "1",
+    if err != nil {
+        log.Fatal(err)
     }
-    req.AddCookie(&cookie)
+    // cookie := http.Cookie {
+    //     Name: "over18",
+    //     Value: "1",
+    // }
+    // req.AddCookie(&cookie)
 
     // Send req
     resp, err := http.DefaultClient.Do(req)
 
     // Read Body
-    body, err := ioutil.ReadAll(resp.Body)
     if err != nil {
-        return nil, err
+        log.Fatal(err)
     }
-    resp.Body.Close()
-    return body, err
+    // bytes, err := ioutil.ReadAll(resp.Body)
+    // if err != nil {
+    //     log.Fatal(err)
+    // }
+    // text := string(bytes)
+    // fmt.Println(text)
+
+    fmt.Printf("%r\n\n\n", resp)
+    defer resp.Body.Close()
+    return resp
 }
 
-
-func GetArticles(board string) {
-    idx := "/index.html"
-    url := BASE_URL + board + idx
-    fmt.Println(url)
-    body, err := GetDoc(url)
-    fmt.Printf("%s", body)
-    fmt.Printf("%s", err)
-}
 
 func GetBoardList() {
-    url := "https://www.ptt.cc/cls/1"
-    body, err := GetDoc(url)
-    if err != nil {
-        fmt.Printf("%s", err)
-    }
-    fmt.Printf("%s", body)
+    url := "https://www.ptt.cc/bbs/hotboards.html"
+    resp := GetResp(url)
+    htmlTokens := html.NewTokenizer(resp.Body)
+    token_loop:
+        for {
+            tokenType := htmlTokens.Next()
+            fmt.Printf("tokenType: %s\n", tokenType)
+            switch tokenType {
+                case html.ErrorToken:
+                    fmt.Println("End")
+                    break token_loop
+                case html.TextToken:
+                    fmt.Println(tokenType)
+                default:
+                    fmt.Println(tokenType)
+            }
+        }
     // Todo
     // parser
 }
