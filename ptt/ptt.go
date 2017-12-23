@@ -24,6 +24,9 @@ func GetDoc(url string) ([]byte, error) {
 
     // Read Body
     body, err := ioutil.ReadAll(resp.Body)
+    if err != nil {
+        return nil, err
+    }
     resp.Body.Close()
     return body, err
 }
@@ -37,3 +40,15 @@ func GetArticles(board string) {
     fmt.Printf("%s", body)
     fmt.Printf("%s", err)
 }
+
+func GetBoardList() {
+    url := "https://www.ptt.cc/cls/1"
+    body, err := GetDoc(url)
+    if err != nil {
+        fmt.Printf("%s", err)
+    }
+    fmt.Printf("%s", body)
+    // Todo
+    // parser
+}
+
