@@ -1,9 +1,9 @@
 package main
 
 import (
-    "./ppt"
+    "./ptt"
 )
 
 func main() {
-    ptt.GetArticles("Gossiping")
+    ptt.GetBoardList()
 }

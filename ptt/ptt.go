@@ -6,8 +6,7 @@ import (
     "log"
     // "io/ioutil"
     "golang.org/x/net/html"
-    // "strings"
-    // "reflect"
+    "reflect"
 )
 
 const (
@@ -47,7 +46,6 @@ func GetResp(url string) (*http.Response) {
     tokens_loop:
         for {
             tt := z.Next()
-            fmt.Printf("%T\n", z)
             switch tt {
                 case html.ErrorToken:
                     fmt.Println("End")
@@ -55,7 +53,23 @@ func GetResp(url string) (*http.Response) {
                 default:
                     tn, _ := z.TagName()
                     t := z.Token()
-                    fmt.Printf("tagename: %s data: %s\n", tn, t.Data)
+                    key, value, more_attr := z.TagAttr()
+                    // TODO
+                    if true {
+                        fmt.Printf("---------\n")
+                        fmt.Printf("tagename: %s data: %s\n", tn, t.Data)
+                        fmt.Printf("key: %s\n", key)
+                        fmt.Printf("value: %s type: %t\n", value, reflect.TypeOf(value))
+                        fmt.Printf("more_attr: %t\n", more_attr)
+                        fmt.Printf("---------\n")
+                    }
+
+                    // fmt.Printf("---------\n")
+                    // fmt.Printf("tagename: %s data: %s\n", tn, t.Data)
+                    // fmt.Printf("key: %s\n", key)
+                    // fmt.Printf("value: %s type: %t\n", value, value)
+                    // fmt.Printf("more_attr: %t\n", more_attr)
+                    // fmt.Printf("---------\n")
             }
         }
     return resp
