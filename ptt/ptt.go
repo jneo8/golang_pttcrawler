@@ -86,13 +86,15 @@ func GetArticles(board string) {
 
     doc.Find(".r-ent").Each(func(i int, s *goquery.Selection) {
         // article := &Article{Board: board}
+
+        // Title
         title := strings.TrimSpace(s.Find(".title").Text())
+
         // nrec
         nrec := s.Find(".nrec")
         if len(nrec.Nodes) > 0 {
             nrec_str := nrec.Text()
             nrec_num, _ := strconv.Atoi(nrec_str)
-
             fmt.Printf("%d : %s\n", nrec_num, title)
         }
 
