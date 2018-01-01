@@ -5,5 +5,5 @@ import (
 )
 
 func main() {
-    ptt.GetBoardList()
+    ptt.GetHotBoardList()
 }
