@@ -8,5 +8,5 @@ import (
 func main() {
     ptt.GetHotBoardList()
     fmt.Println(ptt.BASE_URL)
-    ptt.GetArticles("Gossiping")
+    ptt.GetTitleList("Gossiping")
 }

@@ -16,15 +16,15 @@ const (
 )
 
 type Article struct {
-    ID       string
+    // ID       string
     Board    string
     Title    string
-    Content  string
-    Author   string
-    DateTime string
-    Nrec     int
     Url      string
-    doc      *goquery.Document
+    // Content  string
+    Author   string
+    // DateTime string
+    Nrec     int
+    // doc      *goquery.Document
 }
 
 func GetDoc(url string) (*goquery.Document) {
@@ -79,26 +79,51 @@ func GetHotBoardList() map[string]string {
 }
 
 
-func GetArticles(board string) {
+func GetTitleList(board string) {
     url := BASE_URL + board + "/index.html"
     doc := GetDoc(url)
-    // articles := make([]*Article, 0)
+    articles := make([]*Article, 0)
 
     doc.Find(".r-ent").Each(func(i int, s *goquery.Selection) {
-        // article := &Article{Board: board}
+        article := &Article{Board: board}
 
         // Title
         title := strings.TrimSpace(s.Find(".title").Text())
+        article.Title = title
 
         // nrec
         nrec := s.Find(".nrec")
         if len(nrec.Nodes) > 0 {
             nrec_str := nrec.Text()
             nrec_num, _ := strconv.Atoi(nrec_str)
-            fmt.Printf("%d : %s\n", nrec_num, title)
+            article.Nrec = nrec_num
         }
 
+        // date
+        author := s.Find(".author")
+        if len(author.Nodes) > 0{
+            article.Author = author.Text()
+        }
+
+        articles = append(articles, article)
     })
+
+    // Get prePage & nextPage link
+    prePage := doc.Find(".action-bar").Find("a:contains('‹ 上頁')")
+    if len(prePage.Nodes) > 0 {
+        href, _ := prePage.Attr("href")
+        fmt.Printf(href)
+    }
+
+    nextPage := doc.Find(".action-bar").Find("a:contains('下頁 ›')")
+    if len(nextPage.Nodes) > 0 {
+        href, _ := nextPage.Attr("href")
+        fmt.Printf(href)
+    }
+
+    for idx, v := range articles {
+        fmt.Printf("%v %v\n", idx, v)
+    }
 
 }
 
