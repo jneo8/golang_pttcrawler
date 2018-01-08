@@ -7,12 +7,15 @@ import (
     // "math"
     "strings"
     "strconv"
+    "regexp"
     "github.com/PuerkitoBio/goquery"
 )
 
 const (
     BASE_URL = "https://www.ptt.cc/bbs/"
+    ARTICLE_BASE_URL = "https://www.ptt.cc"
     HOT_BOARD_URL = "https://www.ptt.cc/bbs/hotboards.html"
+    DEFAULT_AUTHOR_NAME = "DEFAULT_AUTHOR"
 )
 
 type Article struct {
@@ -70,11 +73,6 @@ func GetHotBoardList() map[string]string {
         hot_board_list[board_name] = href
     })
 
-    // Print
-    for name, href := range hot_board_list {
-        fmt.Printf("%s: %s\n", name, href)
-    }
-
     return hot_board_list
 }
 
@@ -87,6 +85,14 @@ func GetTitleList(board string) {
     doc.Find(".r-ent").Each(func(i int, s *goquery.Selection) {
         article := &Article{Board: board}
 
+        // Url
+        url := s.Find(".title").Find("a")
+        if len(url.Nodes) > 0 {
+            href, _ := url.Attr("href")
+            fmt.Printf("%s\n", href)
+            GetArticle(ARTICLE_BASE_URL + href, board)
+        }
+
         // Title
         title := strings.TrimSpace(s.Find(".title").Text())
         article.Title = title
@@ -98,7 +104,6 @@ func GetTitleList(board string) {
             nrec_num, _ := strconv.Atoi(nrec_str)
             article.Nrec = nrec_num
         }
-
         // date
         author := s.Find(".author")
         if len(author.Nodes) > 0{
@@ -125,5 +130,28 @@ func GetTitleList(board string) {
         fmt.Printf("%v %v\n", idx, v)
     }
 
+}
+
+
+func GetArticle(url string, board string) {
+    // init article
+    article := &Article{Board: board}
+    doc := GetDoc(url)
+    fmt.Printf("url: %s\n", url)
+
+    // Author 
+    author_origin := doc.Find(".article-metaline").Find(".article-meta-value").Eq(0).Text()
+    fmt.Printf("%s\n", author_origin)
+
+    // If not author, give default NAME
+    if len(author_origin) == 0 {
+        author_origin = "123"
+    }
+    re, _ := regexp.Compile("\\s\\([\\S\\s]+?\\)|\\s\\(\\)")
+    // remove ()
+    author := re.ReplaceAllString(author_origin, "")
+    fmt.Printf("author: %s\n", author)
+
+    fmt.Printf("article: %v\n----\n", article)
 }
 
