@@ -139,6 +139,8 @@ func GetTitleList(board string) {
 func GetArticle(url string, board string) {
     // init article
     article := &Article{Board: board}
+
+    // Get doc
     doc := GetDoc(url)
 
     // Url
@@ -151,8 +153,8 @@ func GetArticle(url string, board string) {
     if len(author_origin) == 0 {
         author_origin = DEFAULT_AUTHOR_NAME
     }
-    re, _ := regexp.Compile("\\s\\([\\S\\s]+?\\)|\\s\\(\\)")
     // remove ()
+    re, _ := regexp.Compile("\\s\\([\\S\\s]+?\\)|\\s\\(\\)")
     author := re.ReplaceAllString(author_origin, "")
     article.Author = author
     fmt.Printf("author: %s\n", author)
