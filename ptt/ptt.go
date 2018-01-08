@@ -15,7 +15,10 @@ const (
     BASE_URL = "https://www.ptt.cc/bbs/"
     ARTICLE_BASE_URL = "https://www.ptt.cc"
     HOT_BOARD_URL = "https://www.ptt.cc/bbs/hotboards.html"
+
+    // default value
     DEFAULT_AUTHOR_NAME = "DEFAULT_AUTHOR"
+    DEFAULT_TITLE = "DEFAULT_TITLE"
 )
 
 type Article struct {
@@ -141,17 +144,23 @@ func GetArticle(url string, board string) {
 
     // Author 
     author_origin := doc.Find(".article-metaline").Find(".article-meta-value").Eq(0).Text()
-    fmt.Printf("%s\n", author_origin)
-
     // If not author, give default NAME
     if len(author_origin) == 0 {
-        author_origin = "123"
+        author_origin = DEFAULT_AUTHOR_NAME
     }
     re, _ := regexp.Compile("\\s\\([\\S\\s]+?\\)|\\s\\(\\)")
     // remove ()
     author := re.ReplaceAllString(author_origin, "")
+    article.Author = author
     fmt.Printf("author: %s\n", author)
 
+    title := doc.Find(".article-metaline").Find(".article-meta-value").Eq(1).Text()
+    if len(title) == 0 {
+        title = DEFAULT_TITLE
+    }
+    article.Title = title
+    fmt.Printf("title: %s\n", title)
+    // article
     fmt.Printf("article: %v\n----\n", article)
 }
 
