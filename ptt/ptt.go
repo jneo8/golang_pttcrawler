@@ -140,6 +140,9 @@ func GetArticle(url string, board string) {
     // init article
     article := &Article{Board: board}
     doc := GetDoc(url)
+
+    // Url
+    article.Url = url
     fmt.Printf("url: %s\n", url)
 
     // Author 
@@ -154,12 +157,14 @@ func GetArticle(url string, board string) {
     article.Author = author
     fmt.Printf("author: %s\n", author)
 
+    // Title
     title := doc.Find(".article-metaline").Find(".article-meta-value").Eq(1).Text()
     if len(title) == 0 {
         title = DEFAULT_TITLE
     }
     article.Title = title
     fmt.Printf("title: %s\n", title)
+
     // article
     fmt.Printf("article: %v\n----\n", article)
 }
