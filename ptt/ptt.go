@@ -5,8 +5,8 @@ import (
     "log"
     "net/http"
     // "math"
-    "strings"
-    "strconv"
+    // "strings"
+    // "strconv"
     "regexp"
     "github.com/PuerkitoBio/goquery"
 )
@@ -26,7 +26,7 @@ type Article struct {
     Board    string
     Title    string
     Url      string
-    // Content  string
+    Content  string
     Author   string
     DateTime string
     Nrec     int
@@ -86,34 +86,15 @@ func GetTitleList(board string) {
     articles := make([]*Article, 0)
 
     doc.Find(".r-ent").Each(func(i int, s *goquery.Selection) {
-        article := &Article{Board: board}
-
         // Url
         url := s.Find(".title").Find("a")
         if len(url.Nodes) > 0 {
             href, _ := url.Attr("href")
             fmt.Printf("%s\n", href)
-            GetArticle(ARTICLE_BASE_URL + href, board)
+            article := GetArticle(ARTICLE_BASE_URL + href, board)
+            articles = append(articles, article)
         }
 
-        // Title
-        title := strings.TrimSpace(s.Find(".title").Text())
-        article.Title = title
-
-        // nrec
-        nrec := s.Find(".nrec")
-        if len(nrec.Nodes) > 0 {
-            nrec_str := nrec.Text()
-            nrec_num, _ := strconv.Atoi(nrec_str)
-            article.Nrec = nrec_num
-        }
-        // date
-        author := s.Find(".author")
-        if len(author.Nodes) > 0{
-            article.Author = author.Text()
-        }
-
-        articles = append(articles, article)
     })
 
     // Get prePage & nextPage link
@@ -128,7 +109,6 @@ func GetTitleList(board string) {
         href, _ := nextPage.Attr("href")
         fmt.Printf(href)
     }
-
     for idx, v := range articles {
         fmt.Printf("%v %v\n", idx, v)
     }
@@ -136,7 +116,7 @@ func GetTitleList(board string) {
 }
 
 
-func GetArticle(url string, board string) {
+func GetArticle(url string, board string) *Article {
     // init article
     article := &Article{Board: board}
 
@@ -167,12 +147,24 @@ func GetArticle(url string, board string) {
     article.Title = title
     fmt.Printf("title: %s\n", title)
 
-    //Date
+    // Date
     datetime := doc.Find(".article-metaline").Find(".article-meta-value").Eq(2).Text()
     article.DateTime = datetime
     fmt.Printf("date: %s\n", datetime)
 
+    // content
+    header := doc.Find(".article-metaline")
+    header.Remove()
+    headerRight := doc.Find(".article-metaline-right")
+    headerRight.Remove()
+    push := doc.Find(".push")
+    push.Remove()
+    content := doc.Find("#main-content").Text()
+    article.Content = content
+    fmt.Printf("content: %s\n", content)
+
     // article
     fmt.Printf("article: %v\n----\n", article)
+    return article
 }
 
