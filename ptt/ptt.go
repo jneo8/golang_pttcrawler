@@ -28,7 +28,7 @@ type Article struct {
     Url      string
     // Content  string
     Author   string
-    // DateTime string
+    DateTime string
     Nrec     int
     // doc      *goquery.Document
 }
@@ -166,6 +166,11 @@ func GetArticle(url string, board string) {
     }
     article.Title = title
     fmt.Printf("title: %s\n", title)
+
+    //Date
+    datetime := doc.Find(".article-metaline").Find(".article-meta-value").Eq(2).Text()
+    article.DateTime = datetime
+    fmt.Printf("date: %s\n", datetime)
 
     // article
     fmt.Printf("article: %v\n----\n", article)
