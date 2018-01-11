@@ -29,7 +29,9 @@ type Article struct {
     Content  string
     Author   string
     DateTime string
-    Nrec     int
+    Pushing  int
+    Boosting int
+    IP       string
     // doc      *goquery.Document
 }
 
@@ -110,7 +112,7 @@ func GetTitleList(board string) {
         fmt.Printf(href)
     }
     for idx, v := range articles {
-        fmt.Printf("%v %v\n", idx, v)
+        fmt.Printf("%v %v %v\n", idx, v.Pushing, v.Boosting)
     }
 
 }
@@ -152,19 +154,28 @@ func GetArticle(url string, board string) *Article {
     article.DateTime = datetime
     fmt.Printf("date: %s\n", datetime)
 
+    // pushing & boosting
+    push := doc.Find(".push")
+    fmt.Printf("%v\n", push.Size())
+    pushing := push.Find(".push-tag:contains('推 ')").Size()
+    boosting := push.Find(".push-tag:contains('噓 ')").Size()
+    article.Pushing = pushing
+    article.Boosting = boosting
+
+
     // content
     header := doc.Find(".article-metaline")
     header.Remove()
     headerRight := doc.Find(".article-metaline-right")
     headerRight.Remove()
-    push := doc.Find(".push")
-    push.Remove()
+    pushs := doc.Find(".push")
+    pushs.Remove()
     content := doc.Find("#main-content").Text()
     article.Content = content
-    fmt.Printf("content: %s\n", content)
+    // fmt.Printf("content: %s\n", content)
 
     // article
-    fmt.Printf("article: %v\n----\n", article)
+    // fmt.Printf("article: %v\n----\n", article)
     return article
 }
 
