@@ -170,7 +170,7 @@ func GetArticle(url string, board string) *Article {
             ip = strings.Split(s.Text(), "來自: ")[1]
         }
     })
-    fmt.Printf("ip: %s\n", ip)
+    article.IP = ip
 
 
     // content
