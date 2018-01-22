@@ -136,7 +136,7 @@ func GetArticle(url string, board string) *Article {
     if len(author_origin) == 0 {
         author_origin = DEFAULT_AUTHOR_NAME
     }
-    // remove ()
+    // remove () in author
     re, _ := regexp.Compile("\\s\\([\\S\\s]+?\\)|\\s\\(\\)")
     author := re.ReplaceAllString(author_origin, "")
     article.Author = author
