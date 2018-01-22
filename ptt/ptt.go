@@ -171,6 +171,7 @@ func GetArticle(url string, board string) *Article {
         }
     })
     article.IP = ip
+    fmt.Printf("ip:%s", ip)
 
 
     // content
