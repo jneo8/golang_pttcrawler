@@ -8,6 +8,7 @@ import (
     // "strings"
     // "strconv"
     "regexp"
+    "strings"
     "github.com/PuerkitoBio/goquery"
 )
 
@@ -34,6 +35,7 @@ type Article struct {
     IP       string
     // doc      *goquery.Document
 }
+
 
 func GetDoc(url string) (*goquery.Document) {
     // Add cookie
@@ -96,7 +98,6 @@ func GetTitleList(board string) {
             article := GetArticle(ARTICLE_BASE_URL + href, board)
             articles = append(articles, article)
         }
-
     })
 
     // Get prePage & nextPage link
@@ -161,6 +162,15 @@ func GetArticle(url string, board string) *Article {
     boosting := push.Find(".push-tag:contains('噓 ')").Size()
     article.Pushing = pushing
     article.Boosting = boosting
+
+    // ip
+    ip := "noip"
+    doc.Find("#main-content").Find(".f2").Each(func(i int, s *goquery.Selection) {
+        if strings.Contains(s.Text(), "來自") {
+            ip = strings.Split(s.Text(), "來自: ")[1]
+        }
+    })
+    fmt.Printf("ip: %s\n", ip)
 
 
     // content
