@@ -2,24 +2,14 @@ package ptt
 
 import (
     "fmt"
-    "log"
-    "net/http"
+    // "log"
+    // "net/http"
     // "math"
     // "strings"
     // "strconv"
     "regexp"
     "strings"
     "github.com/PuerkitoBio/goquery"
-)
-
-const (
-    BASE_URL = "https://www.ptt.cc/bbs/"
-    ARTICLE_BASE_URL = "https://www.ptt.cc"
-    HOT_BOARD_URL = "https://www.ptt.cc/bbs/hotboards.html"
-
-    // default value
-    DEFAULT_AUTHOR_NAME = "DEFAULT_AUTHOR"
-    DEFAULT_TITLE = "DEFAULT_TITLE"
 )
 
 type Article struct {
@@ -34,53 +24,6 @@ type Article struct {
     Boosting int
     IP       string
     // doc      *goquery.Document
-}
-
-
-func GetDoc(url string) (*goquery.Document) {
-    // Add cookie
-    req, err := http.NewRequest("GET", url, nil)
-    if err != nil {
-        log.Fatal(err)
-    }
-
-    cookie := http.Cookie{
-        Name:  "over18",
-        Value: "1",
-    }
-    req.AddCookie(&cookie)
-
-    resp, err := http.DefaultClient.Do(req)
-    if err != nil {
-        log.Fatal(err)
-    }
-
-    if resp.StatusCode != http.StatusOK {
-        log.Fatal(resp.StatusCode)
-    }
-
-    doc, err := goquery.NewDocumentFromResponse(resp)
-    if err != nil {
-        log.Fatal(err)
-    }
-
-    return doc
-}
-
-
-func GetHotBoardList() map[string]string {
-    doc := GetDoc(HOT_BOARD_URL)
-
-    // Parser
-    // Get board name & href
-    hot_board_list := make(map[string]string)
-    doc.Find(".board").Each(func(i int, s *goquery.Selection) {
-        href, _ := s.Attr("href")
-        board_name := s.Find(".board-name").Text()
-        hot_board_list[board_name] = href
-    })
-
-    return hot_board_list
 }
 
 

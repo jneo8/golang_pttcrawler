@@ -6,7 +6,16 @@ import (
 )
 
 func main() {
-    ptt.GetHotBoardList()
-    fmt.Println(ptt.BASE_URL)
-    ptt.GetTitleList("Gossiping")
+    // ptt.GetTitleList("Gossiping")
+    printhotboard()
+}
+
+func printhotboard() {
+
+    s := ptt.GetHotBoardList()
+
+    for name, url := range s {
+        fmt.Printf("%s: %s\n", name, url)
+    }
+
 }
