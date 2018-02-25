@@ -1,7 +1,7 @@
 package ptt
 
 const (
-    BASE_URL = "https://www.ptt.cc/bbs/"
+    BASE_URL = "https://www.ptt.cc"
     ARTICLE_BASE_URL = "https://www.ptt.cc"
     HOT_BOARD_URL = "https://www.ptt.cc/bbs/hotboards.html"
 

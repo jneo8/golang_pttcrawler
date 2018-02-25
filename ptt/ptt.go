@@ -73,7 +73,7 @@ func GetArticle(url string, board string) *Article {
     article.Url = url
     fmt.Printf("url: %s\n", url)
 
-    // Author 
+    // Author
     author_origin := doc.Find(".article-metaline").Find(".article-meta-value").Eq(0).Text()
     // If not author, give default NAME
     if len(author_origin) == 0 {
