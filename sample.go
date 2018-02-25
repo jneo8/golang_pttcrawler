@@ -7,7 +7,16 @@ import (
 
 func main() {
     // ptt.GetTitleList("Gossiping")
-    printhotboard()
+    // printhotboard()
+    getalldocurl()
+}
+
+
+func getalldocurl() {
+    pages := ptt.GetAllDocUrl("Gossiping", 0, "", 10)
+    for index, v := range pages {
+        fmt.Printf("%d: %s\n", index, v.Url)
+    }
 }
 
 func printhotboard() {
