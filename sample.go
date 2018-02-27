@@ -13,10 +13,7 @@ func main() {
 
 
 func getalldocurl() {
-    pages := ptt.GetAllDocUrl("Gossiping", 0, "", 10)
-    for index, v := range pages {
-        fmt.Printf("%d: %s\n", index, v.Url)
-    }
+    ptt.GetAllDocUrl("Gossiping", 0, "", 10)
 }
 
 func printhotboard() {
