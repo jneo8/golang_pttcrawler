@@ -33,11 +33,22 @@ func GetHotBoardList() map[string]string {
     return hot_board_list
 }
 
+func GetAllDocUrl(board string, index int, url string, max int) {
+    pages := GetAllPageUrl(board, index, url, max)
 
-func GetAllDocUrl(board string, index int, url string, max int) []*Page{
+    for index, page := range pages {
+        color.Red("%d: %s", index, page.Url)
+    }
+    pagelist := PageList{Board: board, Pages: pages}
+    color.Cyan("%s", pagelist)
+
+}
+
+func GetAllPageUrl(board string, index int, url string, max int) []*Page{
     // Gen url.
     if (index == 0) {
         url = BASE_URL + "/bbs/" + board + "/index.html"
+        max -= 1
     } else {
         url = BASE_URL + url
     }
@@ -55,10 +66,12 @@ func GetAllDocUrl(board string, index int, url string, max int) []*Page{
             href, _ := nextPage.Attr("href")
             index += 1
             now_page := &Page{Index: index, Url: url, NextUrl: href}
-            color.Red("%s\n", now_page)
 
-            next_pages := GetAllDocUrl(board, index, href, max)
+            next_pages := GetAllPageUrl(board, index, href, max)
             pages = append([]*Page{now_page}, next_pages...)
+        } else {
+            now_page := &Page{Index: index, Url: url, NextUrl: ""}
+            pages = append(pages, now_page)
         }
     } else {
         now_page := &Page{Index: index, Url: url, NextUrl: ""}
