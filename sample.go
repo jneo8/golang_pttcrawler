@@ -13,7 +13,10 @@ func main() {
 
 
 func getalldocurl() {
-    ptt.GetAllDocUrl("Gossiping", 0, "", 10)
+    urls := ptt.GetAllDocUrl("Gossiping", 0, "", 10)
+    for index, url := range urls {
+        fmt.Printf("%d: %s\n", index, url)
+    }
 }
 
 func printhotboard() {
