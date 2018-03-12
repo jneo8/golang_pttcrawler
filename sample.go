@@ -13,8 +13,8 @@ func main() {
 
 
 func getalldocurl() {
-    url_list := ptt.GetAllDocUrl("Gossiping", 0, "", 10)
-    for index, url := range url_list.Urls {
+    board := ptt.GetBoard("Gossiping", 0, "", 10)
+    for index, url := range board.Urls {
         fmt.Printf("%d: %s\n", index, url)
     }
 }

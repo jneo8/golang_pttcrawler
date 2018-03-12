@@ -1,7 +1,6 @@
 package ptt
 
 import (
-    // "fmt"
     "github.com/PuerkitoBio/goquery"
     "github.com/fatih/color"
 )
@@ -14,29 +13,14 @@ type Page struct {
     Doc   *goquery.Document
 }
 
-type UrlList struct {
+type Board struct {
     Urls []string
-    Board string
+    name string
 }
 
-func GetHotBoardList() map[string]string {
-    doc := GetDoc(HOT_BOARD_URL)
-
-    // Parser
-    // Get board name & href
-    hot_board_list := make(map[string]string)
-    doc.Find(".board").Each(func(i int, s *goquery.Selection) {
-        href, _ := s .Attr("href")
-        board_name := s.Find(".board-name").Text()
-        hot_board_list[board_name] = href
-    })
-
-    return hot_board_list
-}
-
-func GetAllDocUrl(board string, index int, url string, max int) *UrlList{
+func GetBoard(board_name string, index int, url string, max int) *Board{
     // Get page's doc.
-    pages := GetPages(board, index, url, max)
+    pages := GetPages(board_name, index, url, max)
 
     urls := make([]string, 0)
 
@@ -54,8 +38,8 @@ func GetAllDocUrl(board string, index int, url string, max int) *UrlList{
             })
         }
     }
-    urllist := &UrlList{Board: board, Urls: urls}
-    return urllist
+    board := &Board{name: board_name, Urls: urls}
+    return board
 }
 
 func GetPages(board string, index int, url string, max int) []*Page{
