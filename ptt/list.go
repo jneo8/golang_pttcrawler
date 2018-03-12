@@ -14,8 +14,8 @@ type Page struct {
     Doc   *goquery.Document
 }
 
-type PageList struct {
-    Pages []*Page
+type UrlList struct {
+    Urls []string
     Board string
 }
 
@@ -34,7 +34,7 @@ func GetHotBoardList() map[string]string {
     return hot_board_list
 }
 
-func GetAllDocUrl(board string, index int, url string, max int) []string {
+func GetAllDocUrl(board string, index int, url string, max int) *UrlList{
     // Get page's doc.
     pages := GetPages(board, index, url, max)
 
@@ -54,7 +54,8 @@ func GetAllDocUrl(board string, index int, url string, max int) []string {
             })
         }
     }
-    return urls
+    urllist := &UrlList{Board: board, Urls: urls}
+    return urllist
 }
 
 func GetPages(board string, index int, url string, max int) []*Page{
