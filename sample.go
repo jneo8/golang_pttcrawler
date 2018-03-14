@@ -35,10 +35,13 @@ func pool() {
     color.Red("Sample: Pool\n")
     p := ptt.NewPool()
     p.AddFish("Gossiping", 3)
+    p.AddFish("NBA", 3)
 
-    for index, f := range p.Fishes {
-        color.Red("%d: %#v\n", index, f)
-        f.Swim()
-        color.Red("%d: %#v\n", index, f)
+    for i := range p.Fishes {
+        p.Fishes[i].Swim()
     }
+
+    // Count
+    num := p.Count()
+    color.Red("Count: %#v\n", num)
 }
