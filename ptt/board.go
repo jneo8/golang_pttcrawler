@@ -7,12 +7,11 @@ import (
 
 type Board struct {
     Urls []string
-    name string
 }
 
-func GetBoard(board_name string, index int, url string, max int) *Board{
+func GetBoard(board_name string, max int) Board{
     // Get page's doc.
-    pages := GetPages(board_name, index, url, max)
+    pages := GetPages(board_name, 0, "", max)
 
     urls := make([]string, 0)
 
@@ -30,6 +29,6 @@ func GetBoard(board_name string, index int, url string, max int) *Board{
             })
         }
     }
-    board := &Board{name: board_name, Urls: urls}
+    board := Board{Urls: urls}
     return board
 }
