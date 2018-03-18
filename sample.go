@@ -39,6 +39,7 @@ func pool() {
 
     for i := range p.Fishes {
         p.Fishes[i].Swim()
+        p.Fishes[i].Swim()
     }
 
     // Count
