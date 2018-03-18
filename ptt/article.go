@@ -9,7 +9,7 @@ import (
 )
 
 type Comment struct {
-    Category string  // pushing or boosting
+    Tag string  // pushing or boosting or no-emotion
     Author string
     DateTime string
     Content string
@@ -102,15 +102,26 @@ func GetArticle(url string) *Article {
     // End IP
 
 
-    // Get Pushing && boosting
-    pushing, boosting := GetComments(doc)
+    // Push
+
+    push := doc.Find(".push")
+
+    // Get Pushing && Boosting
+    pushing := push.Find(".push-tag:contains('推 ')").Size()
+    boosting := push.Find(".push-tag:contains('噓 ')").Size()
     article.Pushing = pushing
     article.Boosting = boosting
+    // End Pushing && boosting
+
+    // Get Comments
+    comments := GetComments(doc)
+    article.Comments = comments
+    // End Comments
 
     // For get Content later.
-    push := doc.Find(".push")
     push.Remove()
-    // End Pushing && boosting
+
+    // End Push
 
     // Get Content
     content := doc.Find("#main-content").Text()
@@ -123,14 +134,11 @@ func GetArticle(url string) *Article {
 }
 
 
-func GetComments(doc *goquery.Document) (int, int){
+func GetComments(doc *goquery.Document) []*Comment {
     push := doc.Find(".push")
-    // Get Pushing && Boosting
-    pushing := push.Find(".push-tag:contains('推 ')").Size()
-    boosting := push.Find(".push-tag:contains('噓 ')").Size()
 
     // Get Coment
-    // Comments := make([]*Comment)
+    comments := make([]*Comment, 0)
     push.Each(func(i int, s * goquery.Selection) {
         comment := &Comment{}
         // Get Content
@@ -138,25 +146,32 @@ func GetComments(doc *goquery.Document) (int, int){
         comment.Content = content
         // End Content
 
-
-        // Get Category
-        category := s.Find(".push-tag").Text()
-        category = strings.Trim(category, ":")
-        category = strings.TrimSpace(category)
-        if (category == "推") {
-            category = "pushing"
-        } else if (category == "噓") {
-            category = "boosting"
+        // Get Tag
+        tag := s.Find(".push-tag").Text()
+        tag = strings.Trim(tag, ":")
+        tag = strings.TrimSpace(tag)
+        if (tag == "推") {
+            tag = "pushing"
+        } else if (tag == "噓") {
+            tag = "boosting"
         } else {
-            category = "no-emotion"
+            tag = "no-emotion"
         }
-        comment.Category = category
-        // End category
+        comment.Tag = tag
+        // End Tag
 
+        // Author
+        author := s.Find(".push-userid").Text()
+        comment.Author = author
+        // End Author
 
-        color.Magenta("%#v", comment)
+        // Datetime 
+        datetime := s.Find(".push-ipdatetime").Text()
+        datetime = strings.TrimSpace(datetime)
+        comment.DateTime = datetime
+        // End Datetime
+        comments = append(comments, comment)
     })
-    color.Cyan("p: %d, b: %d", pushing, boosting)
-    return pushing, boosting
+    return comments
 
 }
