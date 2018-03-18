@@ -3,7 +3,7 @@ package ptt
 
 import (
     "github.com/PuerkitoBio/goquery"
-    "github.com/fatih/color"
+    // "github.com/fatih/color"
     "regexp"
     "strings"
     "time"
@@ -30,10 +30,13 @@ type Article struct {
     Comments []*Comment
 }
 
-func GetArticles(fish *Fish) {
+func GetArticles(fish *Fish) []*Article{
+    articles := make([]*Article, 0)
     for index := range fish.Board.Urls {
-        GetArticle(fish.Board.Urls[index])
+        article := GetArticle(fish.Board.Urls[index])
+        articles = append(articles, article)
     }
+    return articles
 }
 
 func GetArticle(url string) *Article {
@@ -127,8 +130,6 @@ func GetArticle(url string) *Article {
     content = strings.Split(content, "※ 發信站:")[0]
     article.Content = content
 
-
-    color.Green("%#v\n", article)
     return article
 }
 
