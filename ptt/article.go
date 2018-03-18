@@ -4,6 +4,7 @@ package ptt
 import (
     // "github.com/PuerkitoBio/goquery"
     "github.com/fatih/color"
+    "regexp"
 )
 
 type Article struct {
@@ -22,7 +23,7 @@ type Article struct {
 
 func GetArticles(fish *Fish) {
     for index := range fish.Board.Urls {
-        color.Green("Get article: %s", fish.Board.Urls[index])
+        color.Yellow("Get article: %s", fish.Board.Urls[index])
         GetArticle(fish.Board.Urls[index])
     }
 }
@@ -36,11 +37,37 @@ func GetArticle(url string) {
     article := &Article{}
     article.Url = url
 
-    // Get Author
-    author_origin := doc.Find(".article-metaline").Find(".article-meta-value").Eq(0).Text()
-    if len(author_origin) == 0 {
-        author_origin = DEFAULT_AUTHOR_NAME
+
+    // Header
+    // Get author, title, date in Header
+    header := doc.Find(".article-metaline")
+
+    // Get Title
+    title := header.Find(".article-meta-value").Eq(1).Text()
+    if len(title) == 0 {
+        title = DEFAULT_TITLE
     }
+    article.Title = title
+    // End Title
+
+    // Get Author
+    origin_author := header.Find(".article-meta-value").Eq(0).Text()
+    if len(origin_author) == 0 {
+        origin_author = DEFAULT_AUTHOR_NAME
+    }
+    // Remove () in origin_author
+    re, _ := regexp.Compile("\\s\\([\\S\\s]+?\\)|\\s\\(\\)")
+    author := re.ReplaceAllString(origin_author, "")
+    article.Author = author
+    // End Author
+
+    // Get Datetime
+    datetime := header.Find(".article-meta-value").Eq(2).Text()
+    article.DateTime = datetime
+    // End Datetime
+
+    header.Remove()
+
 
     color.Green("%#v\n", article)
 }
