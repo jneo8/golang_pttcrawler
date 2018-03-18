@@ -43,7 +43,8 @@ func (f *Fish) Swim() {
     if (f.Status == 0) {
         board := GetBoard(f.BoardName, f.Max)
         f.Board = board
+    } else if (f.Status == 1) {
+        GetArticles(f)
     }
     f.Status += 1
 }
-
