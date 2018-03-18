@@ -71,16 +71,22 @@ func GetArticle(url string) {
 
     // Get ip
     ip := DEFAULT_IP
+    re, _ = regexp.Compile("[0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+")
     doc.Find("#main-content").Find(".f2").Each(func(i int, s * goquery.Selection) {
+        ip_text := DEFAULT_IP
         if strings.Contains(s.Text(), "來自") {
-            ip = strings.Split(s.Text(), "來自: ")[1]
+            ip_text = strings.Split(s.Text(), "來自: ")[1]
         } else if strings.Contains(s.Text(), "From") {
-            ip = strings.Split(s.Text(), "From: ")[1]
+            ip_text = strings.Split(s.Text(), "From: ")[1]
+        } else if strings.Contains(s.Text(), "編輯") {
+            ip_text = re.FindString(s.Text())
+        }
+        ip_text = strings.TrimSuffix(ip_text, "\n")
+        if (re.FindString(ip_text) != "") {
+            ip = ip_text
         }
     })
-    color.Cyan("%s", ip)
-
-
+    article.IP = ip
 
     color.Green("%#v\n", article)
 }
