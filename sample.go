@@ -42,7 +42,6 @@ func pool() {
         p.Fishes[i].Swim()
     }
 
-    // Count
-    num := p.Count()
-    color.Red("Count: %#v\n", num)
+    // Status
+    p.Status()
 }

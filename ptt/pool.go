@@ -45,10 +45,13 @@ func (p *Pool) AddFish(board_name string, max int) {
 }
 
 func (f *Fish) Swim() {
+    // In Step 1, Get all url in Give BoardName
     if (f.Status == 0) {
         board := GetBoard(f.BoardName, f.Max)
         f.Board = board
-    } else if (f.Status == 1) {
+    }
+    // In Step 2, Get all article.
+    if (f.Status == 1) {
         articles := GetArticles(f)
         f.Articles = articles
     }
