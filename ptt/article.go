@@ -9,7 +9,7 @@ import (
 )
 
 type Article struct {
-    // ID       string
+    ID       string
     Title    string
     Url      string
     Content  string
@@ -27,15 +27,22 @@ func GetArticles(fish *Fish) {
     }
 }
 
-func GetArticle(url string) {
+func GetArticle(url string) *Article {
     color.Green("%s", url)
+
+    article := &Article{}
+
+    // Get ID
+    re_id, _ := regexp.Compile("bbs/(.*).html$")
+    id := re_id.FindString(url)
+    id = strings.Trim(id, "bbs/")
+    id = strings.Trim(id, ".html")
+    article.ID = id
 
     // Get Doc
     doc := GetDoc(url)
 
-    article := &Article{}
     article.Url = url
-
 
     // Header
     // Get author, title, date in Header
@@ -55,8 +62,8 @@ func GetArticle(url string) {
         origin_author = DEFAULT_AUTHOR_NAME
     }
     // Remove () in origin_author
-    re, _ := regexp.Compile("\\s\\([\\S\\s]+?\\)|\\s\\(\\)")
-    author := re.ReplaceAllString(origin_author, "")
+    re_author, _ := regexp.Compile("\\s\\([\\S\\s]+?\\)|\\s\\(\\)")
+    author := re_author.ReplaceAllString(origin_author, "")
     article.Author = author
     // End Author
 
@@ -66,21 +73,39 @@ func GetArticle(url string) {
     // End Datetime
 
     header.Remove()
+    header_right := doc.Find(".article-metaline-right")
+    header_right.Remove()
 
     // Get IP
     ip := DEFAULT_IP
-    re, _ = regexp.Compile("[0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+")
+    re_ip, _ := regexp.Compile("[0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+")
     doc.Find("#main-content").Find(".f2").Each(func(i int, s * goquery.Selection) {
         ip_text := ""
         if strings.Contains(s.Text(), "來自") || strings.Contains(s.Text(), "From") || strings.Contains(s.Text(), "編輯") {
             ip_text = re.FindString(s.Text())
         }
-        if (re.FindString(ip_text) != "") {
+        if (re_ip.FindString(ip_text) != "") {
             ip = ip_text
         }
     })
     article.IP = ip
     // End IP
 
+
+    // Get Pushing && boosting
+    push := doc.Find(".push")
+    pushing := push.Find(".push-tag:contains('推 ')").Size()
+    boosting := push.Find(".push-tag:contains('噓 ')").Size()
+    article.Pushing = pushing
+    article.Boosting =boosting
+    push.Remove()
+    // End Pushing && boosting
+
+    content := doc.Find("#main-content").Text()
+    content = strings.Split(content, "※ 發信站:")[0]
+    article.Content = content
+
+
     color.Green("%#v\n", article)
+    return article
 }
