@@ -25,13 +25,17 @@ func NewPool() Pool {
     return p
 }
 
-func (p *Pool) Count() map[string]int{
-
-    result := make(map[string]int)
+func (p *Pool) Status() {
+    color.Magenta("\nPool info: \n\n")
     for index, fish := range p.Fishes {
-        result[strconv.Itoa(index) + "-" + fish.BoardName] = len(fish.Board.Urls)
+        color.Magenta("Fish %s :", strconv.Itoa(index))
+        color.Magenta("\tBoardName: %s", fish.BoardName)
+        color.Magenta("\tStatus: %d", fish.Status)
+        color.Magenta("\tMax: %d", fish.Max)
+        color.Magenta("\tCount: %d", len(fish.Board.Urls))
+        color.Magenta("\tArticle Count: %d", len(fish.Articles))
+        color.Magenta("\tCreate_time: %v", fish.CreatedTime)
     }
-    return result
 }
 
 func (p *Pool) AddFish(board_name string, max int) {

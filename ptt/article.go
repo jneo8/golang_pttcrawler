@@ -3,7 +3,7 @@ package ptt
 
 import (
     "github.com/PuerkitoBio/goquery"
-    // "github.com/fatih/color"
+    "github.com/fatih/color"
     "regexp"
     "strings"
     "time"
@@ -33,6 +33,7 @@ type Article struct {
 func GetArticles(fish *Fish) []*Article{
     articles := make([]*Article, 0)
     for index := range fish.Board.Urls {
+        color.Yellow("Get article: %s", fish.Board.Urls[index])
         article := GetArticle(fish.Board.Urls[index])
         articles = append(articles, article)
     }
