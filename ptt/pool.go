@@ -12,6 +12,7 @@ type Fish struct {
     BoardName string
     Status int
     Max int
+    Articles []*Article
     CreatedTime time.Time
 }
 
@@ -44,7 +45,8 @@ func (f *Fish) Swim() {
         board := GetBoard(f.BoardName, f.Max)
         f.Board = board
     } else if (f.Status == 1) {
-        GetArticles(f)
+        articles := GetArticles(f)
+        f.Articles = articles
     }
     f.Status += 1
 }
