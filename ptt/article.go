@@ -8,6 +8,13 @@ import (
     "strings"
 )
 
+type Comment struct {
+    category string
+    author string
+    DateTime string
+    Content string
+}
+
 type Article struct {
     ID       string
     Title    string
@@ -18,6 +25,7 @@ type Article struct {
     Pushing  int
     Boosting int
     IP       string
+    Comments []*Comment
 }
 
 func GetArticles(fish *Fish) {
@@ -97,7 +105,7 @@ func GetArticle(url string) *Article {
     pushing := push.Find(".push-tag:contains('推 ')").Size()
     boosting := push.Find(".push-tag:contains('噓 ')").Size()
     article.Pushing = pushing
-    article.Boosting =boosting
+    article.Boosting = boosting
     push.Remove()
     // End Pushing && boosting
 
