@@ -6,6 +6,7 @@ import (
     "github.com/fatih/color"
     "regexp"
     "strings"
+    "time"
 )
 
 type Comment struct {
@@ -13,6 +14,7 @@ type Comment struct {
     Author string
     DateTime string
     Content string
+    CrawlerTime time.Time
 }
 
 type Article struct {
@@ -30,14 +32,11 @@ type Article struct {
 
 func GetArticles(fish *Fish) {
     for index := range fish.Board.Urls {
-        color.Yellow("Get article: %s", fish.Board.Urls[index])
         GetArticle(fish.Board.Urls[index])
     }
 }
 
 func GetArticle(url string) *Article {
-    color.Green("%s", url)
-
     article := &Article{}
 
     // Get ID
@@ -170,6 +169,12 @@ func GetComments(doc *goquery.Document) []*Comment {
         datetime = strings.TrimSpace(datetime)
         comment.DateTime = datetime
         // End Datetime
+
+        // Get CrawlerTime
+        crawlertime := time.Now()
+        comment.CrawlerTime = crawlertime
+        // End CrawlerTime
+
         comments = append(comments, comment)
     })
     return comments
