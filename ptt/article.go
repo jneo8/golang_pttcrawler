@@ -9,8 +9,8 @@ import (
 )
 
 type Comment struct {
-    category string
-    author string
+    Category string  // pushing or boosting
+    Author string
     DateTime string
     Content string
 }
@@ -46,10 +46,10 @@ func GetArticle(url string) *Article {
     id = strings.Trim(id, "bbs/")
     id = strings.Trim(id, ".html")
     article.ID = id
+    // End ID
 
     // Get Doc
     doc := GetDoc(url)
-
     article.Url = url
 
     // Header
@@ -80,9 +80,11 @@ func GetArticle(url string) *Article {
     article.DateTime = datetime
     // End Datetime
 
+    // For get content later.
     header.Remove()
     header_right := doc.Find(".article-metaline-right")
     header_right.Remove()
+    // End Header
 
     // Get IP
     ip := DEFAULT_IP
@@ -90,7 +92,7 @@ func GetArticle(url string) *Article {
     doc.Find("#main-content").Find(".f2").Each(func(i int, s * goquery.Selection) {
         ip_text := ""
         if strings.Contains(s.Text(), "來自") || strings.Contains(s.Text(), "From") || strings.Contains(s.Text(), "編輯") {
-            ip_text = re.FindString(s.Text())
+            ip_text = re_ip.FindString(s.Text())
         }
         if (re_ip.FindString(ip_text) != "") {
             ip = ip_text
@@ -101,14 +103,16 @@ func GetArticle(url string) *Article {
 
 
     // Get Pushing && boosting
-    push := doc.Find(".push")
-    pushing := push.Find(".push-tag:contains('推 ')").Size()
-    boosting := push.Find(".push-tag:contains('噓 ')").Size()
+    pushing, boosting := GetComments(doc)
     article.Pushing = pushing
     article.Boosting = boosting
+
+    // For get Content later.
+    push := doc.Find(".push")
     push.Remove()
     // End Pushing && boosting
 
+    // Get Content
     content := doc.Find("#main-content").Text()
     content = strings.Split(content, "※ 發信站:")[0]
     article.Content = content
@@ -116,4 +120,43 @@ func GetArticle(url string) *Article {
 
     color.Green("%#v\n", article)
     return article
+}
+
+
+func GetComments(doc *goquery.Document) (int, int){
+    push := doc.Find(".push")
+    // Get Pushing && Boosting
+    pushing := push.Find(".push-tag:contains('推 ')").Size()
+    boosting := push.Find(".push-tag:contains('噓 ')").Size()
+
+    // Get Coment
+    // Comments := make([]*Comment)
+    push.Each(func(i int, s * goquery.Selection) {
+        comment := &Comment{}
+        // Get Content
+        content := s.Find(".push-content").Text()
+        comment.Content = content
+        // End Content
+
+
+        // Get Category
+        category := s.Find(".push-tag").Text()
+        category = strings.Trim(category, ":")
+        category = strings.TrimSpace(category)
+        if (category == "推") {
+            category = "pushing"
+        } else if (category == "噓") {
+            category = "boosting"
+        } else {
+            category = "no-emotion"
+        }
+        comment.Category = category
+        // End category
+
+
+        color.Magenta("%#v", comment)
+    })
+    color.Cyan("p: %d, b: %d", pushing, boosting)
+    return pushing, boosting
+
 }
