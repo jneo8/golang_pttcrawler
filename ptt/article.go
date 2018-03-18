@@ -10,7 +10,6 @@ import (
 
 type Article struct {
     // ID       string
-    Board    string
     Title    string
     Url      string
     Content  string
@@ -19,7 +18,6 @@ type Article struct {
     Pushing  int
     Boosting int
     IP       string
-    // doc      *goquery.Document
 }
 
 func GetArticles(fish *Fish) {
@@ -69,24 +67,20 @@ func GetArticle(url string) {
 
     header.Remove()
 
-    // Get ip
+    // Get IP
     ip := DEFAULT_IP
     re, _ = regexp.Compile("[0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+")
     doc.Find("#main-content").Find(".f2").Each(func(i int, s * goquery.Selection) {
-        ip_text := DEFAULT_IP
-        if strings.Contains(s.Text(), "來自") {
-            ip_text = strings.Split(s.Text(), "來自: ")[1]
-        } else if strings.Contains(s.Text(), "From") {
-            ip_text = strings.Split(s.Text(), "From: ")[1]
-        } else if strings.Contains(s.Text(), "編輯") {
+        ip_text := ""
+        if strings.Contains(s.Text(), "來自") || strings.Contains(s.Text(), "From") || strings.Contains(s.Text(), "編輯") {
             ip_text = re.FindString(s.Text())
         }
-        ip_text = strings.TrimSuffix(ip_text, "\n")
         if (re.FindString(ip_text) != "") {
             ip = ip_text
         }
     })
     article.IP = ip
+    // End IP
 
     color.Green("%#v\n", article)
 }
