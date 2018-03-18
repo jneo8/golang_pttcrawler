@@ -74,6 +74,8 @@ func GetArticle(url string) {
     doc.Find("#main-content").Find(".f2").Each(func(i int, s * goquery.Selection) {
         if strings.Contains(s.Text(), "來自") {
             ip = strings.Split(s.Text(), "來自: ")[1]
+        } else if strings.Contains(s.Text(), "From") {
+            ip = strings.Split(s.Text(), "From: ")[1]
         }
     })
     color.Cyan("%s", ip)
