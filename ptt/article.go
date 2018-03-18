@@ -2,9 +2,10 @@ package ptt
 
 
 import (
-    // "github.com/PuerkitoBio/goquery"
+    "github.com/PuerkitoBio/goquery"
     "github.com/fatih/color"
     "regexp"
+    "strings"
 )
 
 type Article struct {
@@ -67,6 +68,16 @@ func GetArticle(url string) {
     // End Datetime
 
     header.Remove()
+
+    // Get ip
+    ip := DEFAULT_IP
+    doc.Find("#main-content").Find(".f2").Each(func(i int, s * goquery.Selection) {
+        if strings.Contains(s.Text(), "來自") {
+            ip = strings.Split(s.Text(), "來自: ")[1]
+        }
+    })
+    color.Cyan("%s", ip)
+
 
 
     color.Green("%#v\n", article)
