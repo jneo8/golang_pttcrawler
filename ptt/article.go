@@ -30,11 +30,11 @@ type Article struct {
     Comments []*Comment
 }
 
-func GetArticles(fish *Fish) []*Article{
+func GetArticles(fishes []*Fish) []*Article{
     articles := make([]*Article, 0)
-    for index := range fish.Board.Urls {
-        color.Yellow("Get article: %s", fish.Board.Urls[index])
-        article := GetArticle(fish.Board.Urls[index])
+    for index := range fishes {
+        color.Yellow("Get article: %s", fishes[index].Url)
+        article := GetArticle(fishes[index].Url)
         articles = append(articles, article)
     }
     return articles

@@ -34,13 +34,13 @@ func printhotboard() {
 func pool() {
     color.Red("Sample: Pool\n")
     p := ptt.NewPool()
-    p.AddFish("Gossiping", 3)
-    p.AddFish("NBA", 3)
+    p.AddBabyFish("Gossiping", 3)
+    p.AddBabyFish("NBA", 3)
 
-    for i := range p.Fishes {
-        p.Fishes[i].Swim()
-        p.Fishes[i].Swim()
-    }
+    // for i := range p.Fishes {
+    //     p.Fishes[i].Swim()
+    //     p.Fishes[i].Swim()
+    // }
 
     // Status
     p.Status()
