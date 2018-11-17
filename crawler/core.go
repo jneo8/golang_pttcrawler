@@ -8,7 +8,7 @@ import (
 func Init() {
 	boards := GetHotBoardList()
 
-	boardChan := make(chan string, 10)
+	boardChan := make(chan Board, 10)
 
 	wg := sync.WaitGroup{}
 	for i := 1; i <= 2; i++ {
@@ -24,9 +24,13 @@ func Init() {
 	wg.Wait()
 }
 
-func crawlerWorker(wg *sync.WaitGroup, workerID int, boardChan <-chan string) {
+func crawlerWorker(wg *sync.WaitGroup, workerID int, boardChan <-chan Board) {
 	defer wg.Done()
 	for board := range boardChan {
 		log.Debugf("worker: %v, %v", workerID, board)
 	}
+}
+
+func getBoard(wg *sync.WaitGroup, board Board) {
+	log.Debugf("%v", board)
 }
