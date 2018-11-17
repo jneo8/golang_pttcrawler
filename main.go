@@ -24,6 +24,5 @@ func init() {
 }
 
 func main() {
-	log.Debugf("123")
-	crawler.GetHotBoardList()
+	crawler.Init()
 }
