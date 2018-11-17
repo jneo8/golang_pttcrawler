@@ -36,20 +36,24 @@ func GetDoc(url string) *goquery.Document {
 	return doc
 }
 
-func GetHotBoardList() map[string]string {
+func GetHotBoardList() []Board {
 	doc := GetDoc(HOT_BOARD_URL)
 
 	// Parser
 	// Get board name & href
-	hot_board_list := make(map[string]string)
+	hotBoardList := []Board{}
 	doc.Find(".board").Each(func(i int, s *goquery.Selection) {
-		href, _ := s.Attr("href")
-		board_name := s.Find(".board-name").Text()
-		hot_board_list[board_name] = href
+		href, err := s.Attr("href")
+		if err != nil {
+			logrus.Panic(err)
+		}
+		boardName := s.Find(".board-name").Text()
+		hotBoardList = append(hotBoardList, Board{IndexUrl: BASE_URL + href, Name: boardName})
+
 	})
-	for i, v := range hot_board_list {
+	for i, v := range hotBoardList {
 		log.Debugf("%v: %v", i, v)
 	}
 
-	return hot_board_list
+	return hotBoardList
 }
