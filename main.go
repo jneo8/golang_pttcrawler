@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/onrik/logrus/filename"
 	log "github.com/sirupsen/logrus"
+	crawler "golang_pttcrawler/crawler"
 	"os"
 )
 
@@ -24,4 +25,5 @@ func init() {
 
 func main() {
 	log.Debugf("123")
+	crawler.GetHotBoardList()
 }
