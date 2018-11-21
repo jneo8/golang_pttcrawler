@@ -43,10 +43,7 @@ func GetHotBoardList() []Board {
 	// Get board name & href
 	hotBoardList := []Board{}
 	doc.Find(".board").Each(func(i int, s *goquery.Selection) {
-		href, err := s.Attr("href")
-		if err != nil {
-			logrus.Panic(err)
-		}
+		href, _ := s.Attr("href")
 		boardName := s.Find(".board-name").Text()
 		hotBoardList = append(hotBoardList, Board{IndexUrl: BASE_URL + href, Name: boardName})
 
