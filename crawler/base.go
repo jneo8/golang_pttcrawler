@@ -48,9 +48,5 @@ func GetHotBoardList() []Board {
 		hotBoardList = append(hotBoardList, Board{IndexUrl: BASE_URL + href, Name: boardName})
 
 	})
-	for i, v := range hotBoardList {
-		log.Debugf("%v: %v", i, v)
-	}
-
 	return hotBoardList
 }
