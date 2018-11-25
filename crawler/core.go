@@ -43,7 +43,6 @@ func (board *Board) getArticle(wg *sync.WaitGroup, urlChan <-chan string) {
 
 	for url := range urlChan {
 		article := Article{}
-		log.Debugf("article: %v", url)
 
 		// Article ID
 		idCompile, _ := regexp.Compile("bbs/(.*).html$")
@@ -51,7 +50,6 @@ func (board *Board) getArticle(wg *sync.WaitGroup, urlChan <-chan string) {
 		articleID = strings.Trim(articleID, "bbs/")
 		articleID = strings.Trim(articleID, ".html")
 		article.ID = articleID
-		log.Debug(articleID)
 
 		// Get Doc
 		doc := GetDoc(url)
@@ -64,6 +62,8 @@ func (board *Board) getArticle(wg *sync.WaitGroup, urlChan <-chan string) {
 		} else {
 			article.RawHtml = rawHtml
 		}
+
+		insertArticle(&article)
 
 		// TODO parser html
 	}
@@ -93,7 +93,6 @@ func (board *Board) getUrls(wg *sync.WaitGroup, urlChan chan<- string) {
 		if len(nextPage.Nodes) > 0 {
 			nextPageHref, _ := nextPage.Attr("href")
 			nextPageHref = BASE_URL + nextPageHref
-			log.Infof("NextPageHref: %v", nextPageHref)
 			doc = GetDoc(nextPageHref)
 		} else {
 			log.Warning("NextPage not find %v:%v", board.Name, idx)
