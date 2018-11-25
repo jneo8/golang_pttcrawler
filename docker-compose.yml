@@ -1,0 +1,15 @@
+version: '3'
+services:
+    mongo:
+        image: mongo:latest
+        container_name: ptt-mongo
+        hostname: ptt-mongo
+        ports:
+            - "27017:27017"
+        command: --wiredTigerCacheSizeGB 3
+
+
+networks:
+    default:
+        external:
+            name: ptt-net
