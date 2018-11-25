@@ -3,6 +3,8 @@ package crawler
 import (
 	"github.com/PuerkitoBio/goquery"
 	log "github.com/sirupsen/logrus"
+	"regexp"
+	"strings"
 	"sync"
 )
 
@@ -38,8 +40,32 @@ func crawlerWorker(wg *sync.WaitGroup, workerID int, boardChan <-chan Board) {
 
 func (board *Board) getArticle(wg *sync.WaitGroup, urlChan <-chan string) {
 	defer wg.Done()
+
 	for url := range urlChan {
+		article := Article{}
 		log.Debugf("article: %v", url)
+
+		// Article ID
+		idCompile, _ := regexp.Compile("bbs/(.*).html$")
+		articleID := idCompile.FindString(url)
+		articleID = strings.Trim(articleID, "bbs/")
+		articleID = strings.Trim(articleID, ".html")
+		article.ID = articleID
+		log.Debug(articleID)
+
+		// Get Doc
+		doc := GetDoc(url)
+
+		// Raw html
+		rawHtml, err := doc.Html()
+		if err != nil {
+			log.Error(err)
+			article.RawHtml = ""
+		} else {
+			article.RawHtml = rawHtml
+		}
+
+		// TODO parser html
 	}
 }
 

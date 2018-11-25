@@ -5,3 +5,8 @@ type Board struct {
 	Name     string
 	IndexUrl string
 }
+
+type Article struct {
+	ID      string
+	RawHtml string
+}
