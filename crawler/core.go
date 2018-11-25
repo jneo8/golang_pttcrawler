@@ -44,6 +44,9 @@ func (board *Board) getArticle(wg *sync.WaitGroup, urlChan <-chan string) {
 	for url := range urlChan {
 		article := Article{}
 
+		// Article Url
+		article.Url = url
+
 		// Article ID
 		idCompile, _ := regexp.Compile("bbs/(.*).html$")
 		articleID := idCompile.FindString(url)
@@ -54,7 +57,7 @@ func (board *Board) getArticle(wg *sync.WaitGroup, urlChan <-chan string) {
 		// Get Doc
 		doc := GetDoc(url)
 
-		// Raw html
+		// Article Raw HTML
 		rawHtml, err := doc.Html()
 		if err != nil {
 			log.Error(err)

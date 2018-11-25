@@ -9,4 +9,5 @@ type Board struct {
 type Article struct {
 	ID      string
 	RawHtml string
+	Url     string
 }
