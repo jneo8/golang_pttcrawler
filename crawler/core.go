@@ -27,6 +27,13 @@ func Init() {
 
 func crawlerWorker(wg *sync.WaitGroup, workerID int, boardChan <-chan Board) {
 	defer wg.Done()
+	session, err := createSession("localhost:27017")
+	if err != nil {
+		log.Panic(err)
+	}
+	pttRepository := PttRepository{Session: session}
+	defer pttRepository.close()
+
 	for board := range boardChan {
 		urlChan := make(chan string)
 		articleChan := make(chan Article)
@@ -37,7 +44,7 @@ func crawlerWorker(wg *sync.WaitGroup, workerID int, boardChan <-chan Board) {
 		go board.getArticle(&jobWg, urlChan, articleChan)
 
 		for article := range articleChan {
-			insertArticle(&article)
+			pttRepository.insertArticle(&article)
 		}
 		jobWg.Wait()
 	}
