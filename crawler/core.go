@@ -29,16 +29,21 @@ func crawlerWorker(wg *sync.WaitGroup, workerID int, boardChan <-chan Board) {
 	defer wg.Done()
 	for board := range boardChan {
 		urlChan := make(chan string)
+		articleChan := make(chan Article)
 		jobWg := sync.WaitGroup{}
 		jobWg.Add(2)
 		log.Debugf("worker: %v, %v", workerID, board)
 		go board.getUrls(&jobWg, urlChan)
-		go board.getArticle(&jobWg, urlChan)
+		go board.getArticle(&jobWg, urlChan, articleChan)
+
+		for article := range articleChan {
+			insertArticle(&article)
+		}
 		jobWg.Wait()
 	}
 }
 
-func (board *Board) getArticle(wg *sync.WaitGroup, urlChan <-chan string) {
+func (board *Board) getArticle(wg *sync.WaitGroup, urlChan <-chan string, articleChan chan<- Article) {
 	defer wg.Done()
 
 	for url := range urlChan {
@@ -66,10 +71,11 @@ func (board *Board) getArticle(wg *sync.WaitGroup, urlChan <-chan string) {
 			article.RawHtml = rawHtml
 		}
 
-		insertArticle(&article)
+		articleChan <- article
 
 		// TODO parser html
 	}
+	close(articleChan)
 }
 
 func (board *Board) getUrls(wg *sync.WaitGroup, urlChan chan<- string) {
