@@ -27,23 +27,37 @@ func Init() {
 
 func crawlerWorker(wg *sync.WaitGroup, workerID int, boardChan <-chan Board) {
 	defer wg.Done()
+	session, err := createSession("localhost:27017")
+	if err != nil {
+		log.Panic(err)
+	}
+	pttRepository := PttRepository{Session: session}
+	defer pttRepository.close()
+
 	for board := range boardChan {
 		urlChan := make(chan string)
+		articleChan := make(chan Article)
 		jobWg := sync.WaitGroup{}
 		jobWg.Add(2)
 		log.Debugf("worker: %v, %v", workerID, board)
 		go board.getUrls(&jobWg, urlChan)
-		go board.getArticle(&jobWg, urlChan)
+		go board.getArticle(&jobWg, urlChan, articleChan)
+
+		for article := range articleChan {
+			pttRepository.insertArticle(&article)
+		}
 		jobWg.Wait()
 	}
 }
 
-func (board *Board) getArticle(wg *sync.WaitGroup, urlChan <-chan string) {
+func (board *Board) getArticle(wg *sync.WaitGroup, urlChan <-chan string, articleChan chan<- Article) {
 	defer wg.Done()
 
 	for url := range urlChan {
 		article := Article{}
-		log.Debugf("article: %v", url)
+
+		// Article Url
+		article.Url = url
 
 		// Article ID
 		idCompile, _ := regexp.Compile("bbs/(.*).html$")
@@ -51,12 +65,11 @@ func (board *Board) getArticle(wg *sync.WaitGroup, urlChan <-chan string) {
 		articleID = strings.Trim(articleID, "bbs/")
 		articleID = strings.Trim(articleID, ".html")
 		article.ID = articleID
-		log.Debug(articleID)
 
 		// Get Doc
 		doc := GetDoc(url)
 
-		// Raw html
+		// Article Raw HTML
 		rawHtml, err := doc.Html()
 		if err != nil {
 			log.Error(err)
@@ -65,8 +78,11 @@ func (board *Board) getArticle(wg *sync.WaitGroup, urlChan <-chan string) {
 			article.RawHtml = rawHtml
 		}
 
+		articleChan <- article
+
 		// TODO parser html
 	}
+	close(articleChan)
 }
 
 func (board *Board) getUrls(wg *sync.WaitGroup, urlChan chan<- string) {
@@ -93,7 +109,6 @@ func (board *Board) getUrls(wg *sync.WaitGroup, urlChan chan<- string) {
 		if len(nextPage.Nodes) > 0 {
 			nextPageHref, _ := nextPage.Attr("href")
 			nextPageHref = BASE_URL + nextPageHref
-			log.Infof("NextPageHref: %v", nextPageHref)
 			doc = GetDoc(nextPageHref)
 		} else {
 			log.Warning("NextPage not find %v:%v", board.Name, idx)
