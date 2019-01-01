@@ -8,6 +8,15 @@ services:
             - "27017:27017"
         command: --wiredTigerCacheSizeGB 3
 
+    mongo-gui:
+        image: mongoclient/mongoclient
+        container_name: ptt-mongo-gui
+        hostname: ptt-mongo-gui
+        ports:
+            - "3000:3000"
+        environment:
+            - MONGO_URL=mongodb://ptt-mongo:27017
+
 
 networks:
     default:
