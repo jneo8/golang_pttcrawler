@@ -68,6 +68,7 @@ func (board *Board) getArticle(wg *sync.WaitGroup, urlChan <-chan string, articl
 
 		// Get Doc
 		doc := GetDoc(url)
+		// article.Doc = doc
 
 		// Article Raw HTML
 		rawHtml, err := doc.Html()
@@ -77,6 +78,10 @@ func (board *Board) getArticle(wg *sync.WaitGroup, urlChan <-chan string, articl
 		} else {
 			article.RawHtml = rawHtml
 		}
+
+		title, author := getInfo(doc)
+		article.Title = title
+		article.Author = author
 
 		articleChan <- article
 
@@ -92,7 +97,7 @@ func (board *Board) getUrls(wg *sync.WaitGroup, urlChan chan<- string) {
 	doc := GetDoc(board.IndexUrl)
 
 	// For now it is for test, for production we will check if data in DB.
-	for idx := 1; idx <= 10; idx++ {
+	for idx := 1; idx <= 1; idx++ {
 		// Get article url in page.
 		doc.Find(".r-ent").Each(
 			func(i int, s *goquery.Selection) {
@@ -116,4 +121,20 @@ func (board *Board) getUrls(wg *sync.WaitGroup, urlChan chan<- string) {
 		}
 	}
 	close(urlChan)
+}
+
+// Get info from article.
+func getInfo(doc *goquery.Document) (string, string) {
+
+	// Header, Get author, title, date
+	header := doc.Find(".article-metaline")
+
+	// Get title
+	title := header.Find(".article-meta-value").Eq(1).Text()
+	author := header.Find(".article-meta-value").Eq(0).Text()
+	re_author, _ := regexp.Compile("\\s\\([\\S\\s]+?\\)|\\s\\(\\)")
+	author = re_author.ReplaceAllString(author, "")
+	log.Debugf("Title: %v", title)
+	log.Debugf("Author: %v", author)
+	return title, author
 }
